@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import "../../Styles/NeoAIChatWidget.css";
 import { CircularProgress } from "@mui/material";
 import { useNeoAI } from "../../Context/NeoAIContext";
- 
+import FormattedMarkdown, { SingleTicketCard, MultiTicketTable } from "./FormattedMessage";
+
 const NeoAIChatWidget = ({
   contextName = "Support Dashboard · Module Lead",
   userEmail = "satish.boddu@neovatic.com",
@@ -14,9 +15,9 @@ const NeoAIChatWidget = ({
   // ── Attachment state ──
   const [attachedFile, setAttachedFile] = useState(null);
   const fileInputRef = useRef(null);
- 
+
   const { messages, isThinking, askNeoAI, resetChat, defaultSuggestions } = useNeoAI();
- 
+
   // Email form state
   const [emailForm, setEmailForm] = useState({
     from: userEmail || "satish.boddu@neovatic.com",
@@ -26,9 +27,9 @@ const NeoAIChatWidget = ({
   });
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [emailSuccessMsg, setEmailSuccessMsg] = useState("");
- 
+
   const chatEndRef = useRef(null);
- 
+
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -54,7 +55,7 @@ const NeoAIChatWidget = ({
   const handleRemoveAttachment = () => {
     setAttachedFile(null);
   };
- 
+
   const handleAsk = (questionText) => {
     const q = (questionText || query).trim();
     if (!q && !attachedFile) return;
@@ -70,20 +71,20 @@ const NeoAIChatWidget = ({
     setQuery("");
     setAttachedFile(null);
   };
- 
+
   const handleResetChat = () => {
     resetChat();
     setQuery("");
     setAttachedFile(null);
   };
- 
+
   const handleSendEmail = (e) => {
     e.preventDefault();
     if (!emailForm.subject.trim() || !emailForm.body.trim()) {
       alert("Please enter a subject and description for the new ticket message.");
       return;
     }
- 
+
     setIsSendingEmail(true);
     setTimeout(() => {
       setIsSendingEmail(false);
@@ -100,7 +101,7 @@ const NeoAIChatWidget = ({
       }, 1500);
     }, 1500);
   };
- 
+
   return (
     <>
       {/* ── Floating Popover Card ── */}
@@ -127,7 +128,7 @@ const NeoAIChatWidget = ({
                       <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                     </svg>
                   </button>
- 
+
                   <button
                     type="button"
                     className="neoai-header-btn"
@@ -141,13 +142,13 @@ const NeoAIChatWidget = ({
                   </button>
                 </div>
               </div>
- 
+
               {/* Body */}
               <div className="neoai-card-body">
                 <p className="neoai-intro-text">
                   Ask about tickets, customers, SLA or knowledge — answers always cite where they came from.
                 </p>
- 
+
                 {/* Suggestions if no messages */}
                 {messages.length === 0 && (
                   <div className="neoai-suggestions-list">
@@ -163,7 +164,7 @@ const NeoAIChatWidget = ({
                     ))}
                   </div>
                 )}
- 
+
                 {/* Conversation Messages */}
                 {messages.length > 0 && (
                   <div className="neoai-messages-list">
@@ -173,8 +174,22 @@ const NeoAIChatWidget = ({
                         className={`neoai-message-bubble ${m.sender === "user" ? "user" : "bot"}`}
                       >
                         <div className="neoai-message-text">
-                          {m.text || m.query || m.header}
+                          {m.sender === "user" ? (
+                            m.text || m.query
+                          ) : (
+                            <FormattedMarkdown text={m.text || m.header} />
+                          )}
                         </div>
+
+                        {/* Single Ticket Detail Card displaying ALL Labels */}
+                        {m.sender === "bot" && m.data && Array.isArray(m.data) && m.data.length === 1 && (
+                          <SingleTicketCard ticket={m.data[0]} />
+                        )}
+
+                        {/* Multi Ticket Table with View All Labels toggle */}
+                        {m.sender === "bot" && m.data && Array.isArray(m.data) && m.data.length > 1 && (
+                          <MultiTicketTable tickets={m.data} />
+                        )}
                         {m.bullets && m.bullets.length > 0 && (
                           <ul style={{ margin: "6px 0 4px 16px", padding: 0, fontSize: "12px", lineHeight: "1.4" }}>
                             {m.bullets.map((b, i) => (
@@ -195,7 +210,7 @@ const NeoAIChatWidget = ({
                         <span className="neoai-message-time">{m.time}</span>
                       </div>
                     ))}
- 
+
                     {isThinking && (
                       <div className="neoai-message-bubble bot thinking">
                         <CircularProgress size={12} color="inherit" thickness={5} />
@@ -229,7 +244,7 @@ const NeoAIChatWidget = ({
                   </button>
                 </div>
               )}
- 
+
               {/* Footer Input */}
               <div className="neoai-card-footer">
                 {/* Hidden native file input */}
@@ -250,7 +265,7 @@ const NeoAIChatWidget = ({
                     <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
                   </svg>
                 </button>
- 
+
                 <input
                   type="text"
                   className="neoai-chat-input"
@@ -261,7 +276,7 @@ const NeoAIChatWidget = ({
                     if (e.key === "Enter") handleAsk();
                   }}
                 />
- 
+
                 <button
                   type="button"
                   className="neoai-ask-btn"
@@ -296,19 +311,19 @@ const NeoAIChatWidget = ({
                   </svg>
                 </button>
               </div>
- 
+
               {/* Form Body */}
               <form className="neoai-email-body" onSubmit={handleSendEmail}>
                 <div className="neoai-email-field-row">
                   <span className="neoai-email-field-lbl">From</span>
                   <span className="neoai-email-field-val mono">{emailForm.from}</span>
                 </div>
- 
+
                 <div className="neoai-email-field-row">
                   <span className="neoai-email-field-lbl">To</span>
                   <span className="neoai-email-field-val mono">{emailForm.to}</span>
                 </div>
- 
+
                 <input
                   type="text"
                   className="neoai-email-subject-input"
@@ -316,20 +331,20 @@ const NeoAIChatWidget = ({
                   value={emailForm.subject}
                   onChange={(e) => setEmailForm({ ...emailForm, subject: e.target.value })}
                 />
- 
+
                 <textarea
                   className="neoai-email-textarea"
                   placeholder="Describe the issue the way a customer would. Mention a transaction code (FB60, MIGO, ME21N), a short dump or an IDoc failure and the triage agent will route it to that team."
                   value={emailForm.body}
                   onChange={(e) => setEmailForm({ ...emailForm, body: e.target.value })}
                 />
- 
+
                 {emailSuccessMsg && (
                   <div className="neoai-email-success-banner">
                     {emailSuccessMsg}
                   </div>
                 )}
- 
+
                 {/* Footer */}
                 <div className="neoai-email-footer">
                   <button
@@ -346,7 +361,7 @@ const NeoAIChatWidget = ({
                       "Send"
                     )}
                   </button>
- 
+
                   <p className="neoai-email-subtext">
                     Goes to the platform — triage, assignment, SLA and monitoring agents run live.
                   </p>
@@ -356,7 +371,7 @@ const NeoAIChatWidget = ({
           )}
         </div>
       )}
- 
+
       {/* ── Bottom Right NeoAI Trigger Button ── */}
       <button
         type="button"
@@ -372,5 +387,5 @@ const NeoAIChatWidget = ({
     </>
   );
 };
- 
+
 export default NeoAIChatWidget;

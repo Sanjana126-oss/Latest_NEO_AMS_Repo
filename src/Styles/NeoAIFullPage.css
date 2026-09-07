@@ -414,3 +414,58 @@
 .neoai-fullpage-attachment-chip-remove:hover {
   background: rgba(30, 64, 175, 0.12);
 }
+
+/* ── Dark Theme Overrides for Full Page Chat ── */
+body.dark-theme .neoai-fullpage-title,
+[data-theme="dark"] .neoai-fullpage-title {
+  color: #ffffff !important;
+}
+
+body.dark-theme .neoai-fullpage-subtitle,
+[data-theme="dark"] .neoai-fullpage-subtitle {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .neoai-chat-box,
+[data-theme="dark"] .neoai-chat-box,
+body.dark-theme .neoai-side-panel,
+[data-theme="dark"] .neoai-side-panel {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .neoai-bot-card,
+[data-theme="dark"] .neoai-bot-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .neoai-user-bubble,
+[data-theme="dark"] .neoai-user-bubble {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .neoai-step-desc,
+[data-theme="dark"] .neoai-step-desc,
+body.dark-theme .neoai-trace-val,
+[data-theme="dark"] .neoai-trace-val {
+  color: #ffffff !important;
+}
+
+body.dark-theme .neoai-fullpage-input,
+[data-theme="dark"] .neoai-fullpage-input {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .neoai-suggestion-pill-btn,
+[data-theme="dark"] .neoai-suggestion-pill-btn {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #ffffff !important;
+}

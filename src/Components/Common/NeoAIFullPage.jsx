@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import "../../Styles/NeoAIFullPage.css";
 import { CircularProgress } from "@mui/material";
 import { useNeoAI } from "../../Context/NeoAIContext";
+import FormattedMarkdown, { SingleTicketCard, MultiTicketTable } from "./FormattedMessage";
  
 const NeoAIFullPage = () => {
   const [query, setQuery] = useState("");
@@ -85,7 +86,17 @@ const NeoAIFullPage = () => {
                   <div key={m.id} className="neoai-bot-response-wrap">
                     <span className="neoai-bubble-sender-lbl bot">NEOAI</span>
                     <div className="neoai-bot-card">
-                      <p className="neoai-bot-card-heading">{m.header || m.text}</p>
+                      <FormattedMarkdown text={m.text || m.header} />
+                      
+                      {/* Single Ticket Detail Card displaying ALL Labels */}
+                      {m.data && Array.isArray(m.data) && m.data.length === 1 && (
+                        <SingleTicketCard ticket={m.data[0]} />
+                      )}
+
+                      {/* Multi Ticket Table with View All Labels toggle */}
+                      {m.data && Array.isArray(m.data) && m.data.length > 1 && (
+                        <MultiTicketTable tickets={m.data} />
+                      )}
                       {m.bullets && m.bullets.length > 0 && (
                         <ul className="neoai-bot-bullets">
                           {m.bullets.map((b, i) => (
